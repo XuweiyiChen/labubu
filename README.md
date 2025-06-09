@@ -1,4 +1,4 @@
-# 🧸 Labubu Monitor
+# 🧸 Labubu Monitor （my first vibe coding experience)
 
 An advanced stock monitoring system for PopMart Labubu collectibles with AI-powered notifications, multiple alert channels, and a beautiful web dashboard.
 
@@ -40,7 +40,7 @@ An advanced stock monitoring system for PopMart Labubu collectibles with AI-powe
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/XuweiyiChen/labubu.git
 cd labubu
 
 # Install dependencies
