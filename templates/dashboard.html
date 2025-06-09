@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Labubu Monitor{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">🧸 Labubu Monitor Dashboard</h1>
+        <p class="text-muted">Real-time monitoring status and statistics</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">📡 Monitored URLs</h5>
+                <h2 class="text-primary">{{ stats.total_urls }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">📊 Events (24h)</h5>
+                <h2 class="text-info">{{ stats.total_events_24h }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">✅ In Stock Now</h5>
+                <h2 class="text-success">{{ stats.in_stock_now }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">🔔 Success Rate</h5>
+                <h2 class="text-warning">{{ "%.1f"|format(stats.notification_success_rate) }}%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monitored URLs -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📱 Monitored Products</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUrlModal">
+                    + Add URL
+                </button>
+            </div>
+            <div class="card-body">
+                {% if monitored_urls %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>URL</th>
+                                    <th>Status</th>
+                                    <th>Last Checked</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for url_data in monitored_urls %}
+                                    {% set url_index = loop.index0 %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ url_data.product_name or 'Unknown Product' }}</strong>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_data.url }}" target="_blank" class="text-decoration-none">
+                                                {{ url_data.url[:50] }}{% if url_data.url|length > 50 %}...{% endif %}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">Monitoring</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ url_data.last_checked|timeago if url_data.last_checked else 'Never' }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="testCheck({{ url_index }})">
+                                                🧪 Test
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No URLs being monitored yet.</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUrlModal">
+                            Add Your First URL
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Events -->
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📈 Recent Events</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_events %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Product</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in recent_events[:20] %}
+                                    <tr>
+                                        <td>
+                                            <small>{{ event.timestamp|timeago }}</small>
+                                        </td>
+                                        <td>
+                                            {{ event.product_name or 'Unknown' }}
+                                        </td>
+                                        <td>
+                                            {% if event.has_stock %}
+                                                <span class="badge bg-success">✅ In Stock</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">❌ Out of Stock</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ event.price|format_currency }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/history" class="btn btn-outline-primary btn-sm">View Full History</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No events recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add URL Modal -->
+<div class="modal fade" id="addUrlModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New URL to Monitor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addUrlForm">
+                    <div class="mb-3">
+                        <label for="url" class="form-label">Product URL</label>
+                        <input type="url" class="form-control" id="url" required 
+                               placeholder="https://www.popmart.com/us/products/...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="product_name" class="form-label">Product Name (Optional)</label>
+                        <input type="text" class="form-control" id="product_name" 
+                               placeholder="e.g., Labubu Checkmate Series">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addUrl()">Add URL</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addUrl() {
+    const url = document.getElementById('url').value;
+    const productName = document.getElementById('product_name').value;
+    
+    if (!url) {
+        alert('Please enter a URL');
+        return;
+    }
+    
+    fetch('/api/add_url', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            url: url,
+            product_name: productName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('URL added successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Error adding URL: ' + error);
+    });
+}
+
+function testCheck(urlIndex) {
+    const button = event.target;
+    button.disabled = true;
+    button.textContent = '⏳ Testing...';
+    
+    fetch(`/api/test_check/${urlIndex}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const status = data.in_stock ? '✅ In Stock' : '❌ Out of Stock';
+            alert(`Test Result: ${status}\n\nProduct: ${data.product_info.name || 'Unknown'}\nPrice: ${data.product_info.price || 'N/A'}`);
+        } else {
+            alert('Test failed: ' + data.message);
+        }
+        button.disabled = false;
+        button.textContent = '🧪 Test';
+    })
+    .catch(error => {
+        alert('Test error: ' + error);
+        button.disabled = false;
+        button.textContent = '🧪 Test';
+    });
+}
+</script>
+{% endblock %} 

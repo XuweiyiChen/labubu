@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}History - Labubu Monitor{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">📈 Monitoring History</h1>
+        <p class="text-muted">Stock check events from the last 7 days</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Recent Events</h5>
+            </div>
+            <div class="card-body">
+                {% if events %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Product</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in events %}
+                                    <tr>
+                                        <td>
+                                            <small>{{ event.timestamp|timeago }}</small><br>
+                                            <small class="text-muted">{{ event.timestamp }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ event.product_name or 'Unknown Product' }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if event.has_stock %}
+                                                <span class="badge bg-success">✅ In Stock</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">❌ Out of Stock</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ event.price|format_currency }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ event.url }}" target="_blank" class="text-decoration-none">
+                                                {{ event.url[:50] }}{% if event.url|length > 50 %}...{% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted">Showing {{ events|length }} events from the last 7 days</p>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <h4 class="text-muted">📭 No Events Yet</h4>
+                        <p class="text-muted">No monitoring events recorded in the last 7 days.</p>
+                        <p class="text-muted">Start monitoring to see events here!</p>
+                        <a href="/" class="btn btn-primary">Go to Dashboard</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if events %}
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Statistics</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Total Events:</strong></td>
+                        <td>{{ events|length }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>In Stock Events:</strong></td>
+                        <td>{{ events|selectattr('has_stock')|list|length }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Out of Stock Events:</strong></td>
+                        <td>{{ events|rejectattr('has_stock')|list|length }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔄 Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/" class="btn btn-primary">📊 Back to Dashboard</a>
+                    <a href="/api/events" class="btn btn-outline-secondary">📄 View Raw Data (JSON)</a>
+                    <button class="btn btn-outline-info" onclick="location.reload()">🔄 Refresh Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

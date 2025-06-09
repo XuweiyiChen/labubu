@@ -1,0 +1,44 @@
+# Environment variables and secrets
+.env
+*.key
+
+# Database files
+*.db
+*.sqlite3
+
+# Screenshots and images from testing
+*.png
+*.jpg
+*.jpeg
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Chrome driver cache
+.wdm/

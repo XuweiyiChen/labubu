@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Labubu Monitor{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">⚙️ Settings</h1>
+        <p class="text-muted">Configuration and system settings</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔧 Current Configuration</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Check Interval:</strong></td>
+                        <td>{{ config.CHECK_INTERVAL }} seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Request Timeout:</strong></td>
+                        <td>{{ config.REQUEST_TIMEOUT }} seconds</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database Path:</strong></td>
+                        <td>{{ config.DB_PATH }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Log Level:</strong></td>
+                        <td>{{ config.LOG_LEVEL }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Web Host:</strong></td>
+                        <td>{{ config.WEB_HOST }}:{{ config.WEB_PORT }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔔 Notification Settings</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td>
+                            {% if config.ENABLE_EMAIL %}
+                                <span class="badge bg-success">✅ Enabled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Disabled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Discord:</strong></td>
+                        <td>
+                            {% if config.ENABLE_DISCORD %}
+                                <span class="badge bg-success">✅ Enabled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Disabled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slack:</strong></td>
+                        <td>
+                            {% if config.ENABLE_SLACK %}
+                                <span class="badge bg-success">✅ Enabled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Disabled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Webhook:</strong></td>
+                        <td>
+                            {% if config.ENABLE_WEBHOOK %}
+                                <span class="badge bg-success">✅ Enabled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Disabled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenAI Key:</strong></td>
+                        <td>
+                            {% if config.OPENAI_API_KEY %}
+                                <span class="badge bg-success">✅ Configured</span>
+                            {% else %}
+                                <span class="badge bg-danger">❌ Missing</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Configuration Help</h5>
+            </div>
+            <div class="card-body">
+                <p>To modify these settings, edit your <code>.env</code> file or set environment variables:</p>
+                
+                <h6>📧 Email Setup (Gmail):</h6>
+                <pre><code>ENABLE_EMAIL=true
+EMAIL_USERNAME=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+EMAIL_TO=recipient@gmail.com</code></pre>
+
+                <h6>💬 Slack Setup:</h6>
+                <pre><code>ENABLE_SLACK=true
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL</code></pre>
+
+                <h6>🤖 OpenAI Setup:</h6>
+                <pre><code>OPENAI_API_KEY=sk-proj-your-openai-api-key</code></pre>
+                
+                <div class="alert alert-info mt-3">
+                    <strong>💡 Tip:</strong> After changing settings, restart the monitor for changes to take effect.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
